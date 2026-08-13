@@ -1,6 +1,6 @@
 [project]
 name = "api-integration-playground"
-version = "0.3.0"
+version = "0.3.1"
 description = "Synthetic API integration playground with auth, pagination, retry and cache patterns."
 requires-python = ">=3.11"
 dependencies = []
