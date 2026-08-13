@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 - Portfolio professionalization
+
+- Added GitHub Actions CI with Ruff, PyTest and coverage.
+- Added stronger tests for invalid credentials, pagination, retry exhaustion and target writes.
+- Polished README badges, examples and recruiter-friendly project structure notes.
+
 ## v0.2.0 - Resilient integration layer
 
 - Added explicit client configuration, metrics and normalized output.

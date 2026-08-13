@@ -69,10 +69,11 @@ class ApiClient:
         page = 1
         records: list[dict] = []
         while page is not None:
+            current_page = page
             response, token = self._with_retry(
-                lambda current_token: self.api.list_records(
+                lambda current_token, page_number=current_page: self.api.list_records(
                     current_token,
-                    page,
+                    page_number,
                     page_size,
                     timeout_seconds=self.config.timeout_seconds,
                 ),
