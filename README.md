@@ -1,72 +1,96 @@
 # API Integration Playground
 
-Independent public portfolio project for **Python**, **REST integration patterns**, **automation** and **resilient client design**.
+[![CI](https://github.com/guilherme-lacerda-tech/api-integration-playground/actions/workflows/ci.yml/badge.svg)](https://github.com/guilherme-lacerda-tech/api-integration-playground/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+[![Release](https://img.shields.io/github/v/release/guilherme-lacerda-tech/api-integration-playground)](https://github.com/guilherme-lacerda-tech/api-integration-playground/releases)
+[![License](https://img.shields.io/github/license/guilherme-lacerda-tech/api-integration-playground)](LICENSE)
 
-This repository was created from scratch with a fictional API and synthetic data. It does not contain corporate code, real data, private endpoints, credentials, logs or proprietary rules.
+Synthetic REST integration lab focused on authentication, pagination, retry, backoff, timeout handling and normalization.
 
-## Problem
+## Why / Problem
 
-API integrations must survive pagination, expiring tokens, throttling, transient errors and timeouts while keeping data normalization clear.
+API integrations fail in ordinary ways: expired tokens, throttling, transient server errors and timeouts. This project demonstrates those behaviors with deterministic mock APIs instead of relying on unstable public services.
 
-## What It Demonstrates
+## Features
 
 - Simulated authentication and token refresh.
-- Pagination across a mock REST source.
+- Paged source API.
 - Retry with exponential backoff.
-- Handling for `HTTP 429`, `HTTP 500`, timeout and expired token scenarios.
-- Normalization from source payloads into target records.
-- In-memory cache and integration metrics.
-- Docker execution for the demo workflow.
+- Synthetic `HTTP 429`, `HTTP 500`, timeout and expired-token scenarios.
+- Source payload normalization.
+- In-memory target store.
+- Cache reuse and integration metrics.
+- CI with Ruff, PyTest and coverage.
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-    A["Mock API A"] --> B["Integration layer"]
-    B --> C["Retry / timeout / token refresh"]
-    C --> D["Normalization"]
-    D --> E["Mock API B / storage"]
-    B --> F["Logs and metrics"]
+    Source["Mock API A"] --> Client["Integration layer"]
+    Client --> Retry["Retry / backoff / timeout"]
+    Retry --> Normalize["Normalization"]
+    Normalize --> Target["Mock target store"]
+    Client --> Metrics["Metrics and logs"]
 ```
 
-See [docs/architecture.md](docs/architecture.md) for details.
+## Tech Stack
 
-## Stack
+Current: `Python` `REST patterns` `Retry` `Exponential backoff` `Pagination` `Cache` `Docker` `PyTest` `Ruff`
 
-`Python` `REST patterns` `Retry` `Exponential backoff` `Pagination` `Cache` `Docker` `PyTest`
+Planned: optional HTTP mock server and structured JSON logs.
 
-## Run Locally
+## Quick Start
 
 ```powershell
+python -m pip install -e ".[dev]"
 python examples/run_demo.py
 ```
 
-## Run With Docker
+## Docker
 
 ```powershell
 docker build -t api-integration-playground .
 docker run --rm api-integration-playground
 ```
 
-## Run Tests
+Docker runtime validation requires a local Docker CLI. In this workspace the Docker CLI was unavailable, so the Dockerfile was reviewed and the Python test/demo validation was executed separately.
+
+## Tests
 
 ```powershell
-python -m pip install -e ".[dev]"
-pytest
+python -m pytest --cov --cov-report=term-missing
+python -m ruff check .
 ```
 
-## Technical Decisions
+## Example Output
 
-- A mock API is used so every failure scenario is deterministic and safe to demonstrate.
-- No external service is required because the purpose is the integration layer, not vendor-specific API usage.
-- Docker is useful here because it packages the demo client as a reproducible command.
+```text
+Fetched records: 9
+Normalized records: 9
+Records written to target: 9
+Retries handled: 3
+Rate limits handled: 1
+Timeouts handled: 1
+Token refreshes: 3
+```
+
+## Project Structure
+
+- `src/api_integration_playground/mock_api.py`: deterministic source API and failures.
+- `src/api_integration_playground/client.py`: integration behavior, metrics and normalization.
+- `examples/run_demo.py`: executable synthetic integration run.
+- `tests`: retry, error, cache and target-store tests.
+
+## Engineering Decisions
+
+- Mock APIs keep failure scenarios repeatable.
+- No real tokens or endpoints are required.
+- Docker packages the demo command but no database is forced into the project.
 
 ## Roadmap
 
-- Add an optional HTTP mock server after the API design phase.
-- Add structured JSON logs.
-- Add persistence only when there is a real reason to retain integration runs.
+See [ROADMAP.md](ROADMAP.md).
 
-## Security and Independence
+## Security
 
-See [SECURITY.md](SECURITY.md) and [DISCLAIMER.md](DISCLAIMER.md).
+All credentials, tokens and records are synthetic. This repository does not use private APIs, employer endpoints or real customer data.
