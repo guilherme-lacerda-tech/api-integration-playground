@@ -1,30 +1,29 @@
-    # Architecture
+# Architecture
 
-    ## Design Goal
+## Design Goal
 
-    Demonstrate robust API client patterns against a simulated API.
+Demonstrate integration behavior that is common in real REST environments while keeping every API, token and record synthetic.
 
-    ## Current Boundaries
+## Flow
 
-    - Standard library first.
-    - Synthetic input only.
-    - Generated output ignored by Git.
-    - No real systems, endpoints or credentials.
+```mermaid
+flowchart TB
+    Source["Mock API A"] --> Client["Resilient API client"]
+    Client --> Retry["Retry, backoff, timeout handling"]
+    Retry --> Normalize["Normalization"]
+    Normalize --> Target["Mock API B / target store"]
+    Client --> Metrics["Integration metrics and logs"]
+```
 
-    ## Decisions
+## Failure Scenarios
 
-    - Mock external dependencies.
-- Keep client behavior testable.
-- Use synthetic credentials only.
+- `HTTP 429` rate limiting with retry-after behavior.
+- `HTTP 500` transient server failure.
+- Request timeout.
+- Expired synthetic token with re-authentication.
 
-    ## Future Layers
+## Boundaries
 
-    ```mermaid
-    flowchart TB
-        A["Mock inputs"] --> B["Collector / Loader"]
-        B --> C["Domain validation"]
-        C --> D["Rules / Processing"]
-        D --> E["Persistence"]
-        E --> F["API / Reporting"]
-        F --> G["Automation workflows"]
-    ```
+- No external API credentials are used.
+- All tokens are generated in memory.
+- The target store is synthetic and can be replaced by a database or API later.

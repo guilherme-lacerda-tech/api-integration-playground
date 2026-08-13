@@ -1,77 +1,72 @@
-    # API Integration Playground
+# API Integration Playground
 
-    Independent public portfolio project for **Python**, **automation**,
-    **systems integration** and **solutions engineering**.
+Independent public portfolio project for **Python**, **REST integration patterns**, **automation** and **resilient client design**.
 
-    This repository was created from scratch with a fictional domain and
-    synthetic data. It does not contain corporate code, real data, private
-    endpoints, credentials, logs or proprietary rules.
+This repository was created from scratch with a fictional API and synthetic data. It does not contain corporate code, real data, private endpoints, credentials, logs or proprietary rules.
 
-    ## Problem
+## Problem
 
-    API integrations need authentication, pagination, retry, error handling and clear logs.
+API integrations must survive pagination, expiring tokens, throttling, transient errors and timeouts while keeping data normalization clear.
 
-    ## Objective
+## What It Demonstrates
 
-    Demonstrate robust API client patterns against a simulated API.
+- Simulated authentication and token refresh.
+- Pagination across a mock REST source.
+- Retry with exponential backoff.
+- Handling for `HTTP 429`, `HTTP 500`, timeout and expired token scenarios.
+- Normalization from source payloads into target records.
+- In-memory cache and integration metrics.
+- Docker execution for the demo workflow.
 
-    ## Current Features
+## Architecture
 
-    - Simulated authentication.
-- Paged records.
-- Transient failure retry.
-- In-memory cache.
+```mermaid
+flowchart TB
+    A["Mock API A"] --> B["Integration layer"]
+    B --> C["Retry / timeout / token refresh"]
+    C --> D["Normalization"]
+    D --> E["Mock API B / storage"]
+    B --> F["Logs and metrics"]
+```
 
-    ## Architecture
+See [docs/architecture.md](docs/architecture.md) for details.
 
-    ```mermaid
-    flowchart LR
-        A["Synthetic input"] --> B["Python processing"]
-        B --> C["Rules / validation"]
-        C --> D["Generated local output"]
-        D --> E["Future API / dashboard"]
-    ```
+## Stack
 
-    See [docs/architecture.md](docs/architecture.md) for details.
+`Python` `REST patterns` `Retry` `Exponential backoff` `Pagination` `Cache` `Docker` `PyTest`
 
-    ## Stack
+## Run Locally
 
-    Current:
+```powershell
+python examples/run_demo.py
+```
 
-    `Python` `Mock API` `Retry` `Pagination` `Cache`
+## Run With Docker
 
-    Planned evolution:
+```powershell
+docker build -t api-integration-playground .
+docker run --rm api-integration-playground
+```
 
-    - PyTest
-- httpx
-- FastAPI mock server
-- Docker
-- GitHub Actions
+## Run Tests
 
-    ## Run Locally
+```powershell
+python -m pip install -e ".[dev]"
+pytest
+```
 
-    ```powershell
-    python examples/run_demo.py
-    ```
+## Technical Decisions
 
-    The demo uses only files under `data/sample/` and writes generated output
-    to ignored local folders.
+- A mock API is used so every failure scenario is deterministic and safe to demonstrate.
+- No external service is required because the purpose is the integration layer, not vendor-specific API usage.
+- Docker is useful here because it packages the demo client as a reproducible command.
 
-    ## Repository Workflow
+## Roadmap
 
-    This project is intended to evolve through:
+- Add an optional HTTP mock server after the API design phase.
+- Add structured JSON logs.
+- Add persistence only when there is a real reason to retain integration runs.
 
-    - Issues for planned work.
-    - Milestones for learning phases.
-    - Small branches and pull requests.
-    - Releases when a useful increment is ready.
+## Security and Independence
 
-    Draft issues are documented in [docs/github-issues.md](docs/github-issues.md).
-
-    ## Roadmap
-
-    See [ROADMAP.md](ROADMAP.md).
-
-    ## Security and Independence
-
-    See [SECURITY.md](SECURITY.md) and [DISCLAIMER.md](DISCLAIMER.md).
+See [SECURITY.md](SECURITY.md) and [DISCLAIMER.md](DISCLAIMER.md).
